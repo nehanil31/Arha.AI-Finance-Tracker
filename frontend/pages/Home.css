@@ -1,0 +1,35 @@
+.home-container {
+  text-align: center;
+  padding: 4rem;
+  background-color: #f7f7f7;
+  min-height: 100vh;
+}
+
+.home-heading {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.home-description {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  color: #555;
+}
+
+.home-button {
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.home-button:hover {
+  background-color: #0056b3;
+}
