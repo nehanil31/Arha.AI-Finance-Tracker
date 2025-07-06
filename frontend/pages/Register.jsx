@@ -13,6 +13,19 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // API call here
+    console.log({ name, password, email });
+    try {
+      await axios.post("/api/v1/users/register", {
+        name,
+        email,
+        password,
+      });
+      alert("Registered successfully");
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+      alert("Registration unsuccessfull");
+    }
   };
 
   return (

@@ -7,6 +7,7 @@ const Navbar = () => {
     <nav className="navbar">
       <Link to="/" className="logo">
         Arha AI
+        <img src="frontend\public\logo.jpeg" alt="" />
       </Link>
       <ul className="nav-links">
         <li>
