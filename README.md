@@ -33,5 +33,5 @@ A **full-stack MERN** (MongoDB, Express, React, Node.js) Finance Tracker web app
 
 ---
 
-## 📂 Project Structure
+
 
