@@ -2,7 +2,7 @@ import React, { useState } from "react";
 // import { Link } from "react-router-dom";
 import { data, Link, useNavigate } from "react-router-dom";
 import "./Login.css";
-import axios from "axios";
+import API from "../src/api/axiosInstance";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,16 +12,15 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("/api/v1/users/login", {
+      const { data } = await API.post("/users/login", {
         email,
         password,
       });
-      console.log(data);
-      alert("successfully logged in");
-      localStorage.setItem("user", JSON.stringify({ ...data, password: "" }));
+      localStorage.setItem("userInfo", JSON.stringify(data));
       navigate("/dashboard");
     } catch (error) {
-      alert("Not logged in");
+      alert("Login failed");
+      navigate("/login");
     }
   };
 

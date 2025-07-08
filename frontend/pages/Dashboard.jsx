@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
 import {
   PieChart,
@@ -10,20 +10,16 @@ import {
 } from "recharts";
 import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import API from "../src/api/axiosInstance"; // Axios instance with token
 
 const COLORS = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
 
 const Dashboard = () => {
   const [view, setView] = useState("monthly");
-
-  const [accounts, setAccounts] = useState([
-    { id: 1, type: "Wallet", balance: 15000 },
-    { id: 2, type: "Bank", balance: 50000 },
-    { id: 3, type: "Crypto", balance: 5000 },
-  ]);
-
+  const [accounts, setAccounts] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [newExpense, setNewExpense] = useState({
     name: "",
@@ -48,21 +44,51 @@ const Dashboard = () => {
 
   const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [accountsRes, expensesRes, incomesRes] = await Promise.all([
+          API.get("/accounts"),
+          API.get("/expenses"),
+          API.get("/incomes"),
+        ]);
+        setAccounts(accountsRes.data);
+        setExpenses(expensesRes.data);
+        setIncomes(incomesRes.data);
+      } catch (err) {
+        console.error("Failed to load data:", err);
+        alert("Error fetching data. Please log in again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleViewChange = (newView) => setView(newView);
 
-  const handleAddAccount = (e) => {
+  const handleAddAccount = async (e) => {
     e.preventDefault();
-    if (!newAccount.type || !newAccount.balance) return;
-    const newId = accounts.length + 1;
-    setAccounts([
-      ...accounts,
-      { id: newId, type: newAccount.type, balance: Number(newAccount.balance) },
-    ]);
-    setNewAccount({ type: "", balance: "" });
+    try {
+      const { data } = await API.post("/accounts", {
+        type: newAccount.type,
+        balance: Number(newAccount.balance),
+      });
+      setAccounts([...accounts, data]);
+      setNewAccount({ type: "", balance: "" });
+    } catch (err) {
+      alert("Failed to add account");
+    }
   };
 
-  const handleDeleteAccount = (id) => {
-    setAccounts(accounts.filter((acc) => acc.id !== id));
+  const handleDeleteAccount = async (id) => {
+    try {
+      await API.delete(`/accounts/${id}`);
+      setAccounts(accounts.filter((acc) => acc._id !== id));
+    } catch (err) {
+      alert("Failed to delete account");
+    }
   };
 
   const handleEditAccount = (id, currentBalance) => {
@@ -70,98 +96,78 @@ const Dashboard = () => {
     setEditedBalance(currentBalance);
   };
 
-  const handleSaveAccount = (id) => {
-    setAccounts(
-      accounts.map((acc) =>
-        acc.id === id ? { ...acc, balance: Number(editedBalance) } : acc
-      )
-    );
-    setEditMode(null);
-    setEditedBalance("");
+  const handleSaveAccount = async (id) => {
+    try {
+      const { data } = await API.put(`/accounts/${id}`, {
+        balance: Number(editedBalance),
+      });
+      setAccounts(
+        accounts.map((acc) =>
+          acc._id === id ? { ...acc, balance: data.balance } : acc
+        )
+      );
+      setEditMode(null);
+      setEditedBalance("");
+    } catch (err) {
+      alert("Failed to update account");
+    }
   };
 
-  const handleAddExpense = (e) => {
+  const handleAddExpense = async (e) => {
     e.preventDefault();
-    const { name, amount, category, accountId } = newExpense;
-    if (!name || !amount || !category || !accountId) return;
-
-    const selectedAccount = accounts.find(
-      (acc) => acc.id === Number(accountId)
-    );
-
-    if (!selectedAccount) {
-      alert("Selected account not found.");
-      return;
-    }
-
-    if (selectedAccount.balance < Number(amount)) {
-      alert("Insufficient funds in selected account.");
-      return;
-    }
-
-    const updatedAccounts = accounts.map((acc) =>
-      acc.id === Number(accountId)
-        ? { ...acc, balance: acc.balance - Number(amount) }
-        : acc
-    );
-
-    setAccounts(updatedAccounts);
-
-    const newId = expenses.length + 1;
-    setExpenses([
-      ...expenses,
-      {
-        id: newId,
+    try {
+      const { name, amount, category, accountId } = newExpense;
+      const { data } = await API.post("/expenses", {
         name,
         amount: Number(amount),
         category,
-        account: selectedAccount.type,
-      },
-    ]);
+        accountId,
+      });
+      setExpenses([...expenses, data]);
+      setNewExpense({ name: "", amount: "", category: "", accountId: "" });
 
-    setNewExpense({ name: "", amount: "", category: "", accountId: "" });
+      // Update account balance locally
+      const updatedAccounts = accounts.map((acc) =>
+        acc._id === accountId
+          ? { ...acc, balance: acc.balance - Number(amount) }
+          : acc
+      );
+      setAccounts(updatedAccounts);
+    } catch (err) {
+      alert("Failed to add expense");
+    }
   };
 
-  const handleAddIncome = (e) => {
+  const handleAddIncome = async (e) => {
     e.preventDefault();
-    const { name, amount, accountId } = newIncome;
-    if (!name || !amount || !accountId) return;
-
-    const selectedAccount = accounts.find(
-      (acc) => acc.id === Number(accountId)
-    );
-
-    if (!selectedAccount) {
-      alert("Selected account not found.");
-      return;
-    }
-
-    const updatedAccounts = accounts.map((acc) =>
-      acc.id === Number(accountId)
-        ? { ...acc, balance: acc.balance + Number(amount) }
-        : acc
-    );
-
-    setAccounts(updatedAccounts);
-
-    const newId = incomes.length + 1;
-    setIncomes([
-      ...incomes,
-      {
-        id: newId,
+    try {
+      const { name, amount, accountId } = newIncome;
+      const { data } = await API.post("/incomes", {
         name,
         amount: Number(amount),
-        account: selectedAccount.type,
-      },
-    ]);
+        accountId,
+      });
+      setIncomes([...incomes, data]);
+      setNewIncome({ name: "", amount: "", accountId: "" });
 
-    setNewIncome({ name: "", amount: "", accountId: "" });
+      // Update account balance locally
+      const updatedAccounts = accounts.map((acc) =>
+        acc._id === accountId
+          ? { ...acc, balance: acc.balance + Number(amount) }
+          : acc
+      );
+      setAccounts(updatedAccounts);
+    } catch (err) {
+      alert("Failed to add income");
+    }
   };
 
   const chartData = [
     { name: "Expenses", value: expenses.reduce((sum, e) => sum + e.amount, 0) },
     { name: "Incomes", value: incomes.reduce((sum, i) => sum + i.amount, 0) },
   ];
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="dashboard-layout">
@@ -177,11 +183,11 @@ const Dashboard = () => {
             <div className="accounts-list">
               {accounts.map((account) => (
                 <div
-                  key={account.id}
+                  key={account._id}
                   className={`account-card ${account.type.toLowerCase()}`}
                 >
                   <h3>{account.type}</h3>
-                  {editMode === account.id ? (
+                  {editMode === account._id ? (
                     <>
                       <input
                         type="number"
@@ -190,7 +196,7 @@ const Dashboard = () => {
                         className="edit-input"
                       />
                       <button
-                        onClick={() => handleSaveAccount(account.id)}
+                        onClick={() => handleSaveAccount(account._id)}
                         className="save-btn"
                       >
                         Save
@@ -203,14 +209,14 @@ const Dashboard = () => {
                     <button
                       className="edit-btn"
                       onClick={() =>
-                        handleEditAccount(account.id, account.balance)
+                        handleEditAccount(account._id, account.balance)
                       }
                     >
                       Edit
                     </button>
                     <button
                       className="delete-btn"
-                      onClick={() => handleDeleteAccount(account.id)}
+                      onClick={() => handleDeleteAccount(account._id)}
                     >
                       Delete
                     </button>
@@ -331,7 +337,7 @@ const Dashboard = () => {
               >
                 <option value="">Select Account</option>
                 {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
+                  <option key={acc._id} value={acc._id}>
                     {acc.type} (₹{acc.balance.toLocaleString()})
                   </option>
                 ))}
@@ -346,9 +352,8 @@ const Dashboard = () => {
               ) : (
                 <ul>
                   {expenses.map((expense) => (
-                    <li key={expense.id}>
+                    <li key={expense._id}>
                       💸 {expense.name} - ₹{expense.amount} [{expense.category}]
-                      from {expense.account}
                     </li>
                   ))}
                 </ul>
@@ -387,7 +392,7 @@ const Dashboard = () => {
               >
                 <option value="">Select Account</option>
                 {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
+                  <option key={acc._id} value={acc._id}>
                     {acc.type} (₹{acc.balance.toLocaleString()})
                   </option>
                 ))}
@@ -402,8 +407,8 @@ const Dashboard = () => {
               ) : (
                 <ul>
                   {incomes.map((income) => (
-                    <li key={income.id}>
-                      💰 {income.name} + ₹{income.amount} to {income.account}
+                    <li key={income._id}>
+                      💰 {income.name} + ₹{income.amount}
                     </li>
                   ))}
                 </ul>

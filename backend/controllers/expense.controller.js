@@ -1,4 +1,4 @@
-import expenseModel from "../models/expense.models";
+import expenseModel from "../models/expense.models.js";
 // Get all expenses for the logged-in user
 export const getExpenses = async (req, res) => {
   try {

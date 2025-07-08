@@ -1,4 +1,4 @@
-import incomeModel from "../models/income.model";
+import incomeModel from "../models/income.model.js";
 
 // Get all incomes for the logged-in user
 export const getIncomes = async (req, res) => {

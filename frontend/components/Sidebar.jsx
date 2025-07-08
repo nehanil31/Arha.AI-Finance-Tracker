@@ -1,9 +1,14 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import "./Sidebar.css";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
+import "./Sidebar.css";
 const Sidebar = () => {
+  const navigate = useNavigate();
   const location = useLocation();
+  const handleLogout = () => {
+    localStorage.removeItem("userInfo");
+    navigate("/login");
+  };
 
   return (
     <aside className="sidebar">
@@ -23,6 +28,9 @@ const Sidebar = () => {
         </li>
         <li>
           <Link to="/settings">Settings</Link>
+        </li>
+        <li>
+          <button onClick={handleLogout}>Logout</button>
         </li>
       </ul>
     </aside>

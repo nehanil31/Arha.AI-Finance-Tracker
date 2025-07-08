@@ -1,5 +1,5 @@
-import expenseModel from "../models/expense.models";
-import incomeModel from "../models/income.model";
+import expenseModel from "../models/expense.models.js";
+import incomeModel from "../models/income.model.js";
 import ExcelJS from "exceljs";
 
 // Get overall report data // need to know about this code

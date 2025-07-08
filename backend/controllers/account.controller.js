@@ -1,4 +1,4 @@
-import accountModel from "../models/account.models";
+import accountModel from "../models/account.models.js";
 
 export const getAccounts = async (req, res) => {
   try {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import "./Income.css";
 import {
@@ -10,41 +10,63 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import API from "../src/api/axiosInstance"; // Axios instance with JWT token
 
 const IncomePage = () => {
-  const [incomes, setIncomes] = useState([
-    { id: 1, name: "Salary", amount: 50000 },
-    { id: 2, name: "Freelance", amount: 15000 },
-    { id: 3, name: "Investments", amount: 8000 },
-  ]);
-
+  const [incomes, setIncomes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [newIncome, setNewIncome] = useState({
     name: "",
     amount: "",
   });
 
-  const handleAddIncome = (e) => {
+  // ✅ Fetch incomes from backend
+  useEffect(() => {
+    const fetchIncomes = async () => {
+      try {
+        const { data } = await API.get("/incomes");
+        setIncomes(data);
+      } catch (err) {
+        console.error("Failed to fetch incomes:", err);
+        alert("Error loading incomes. Please login again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchIncomes();
+  }, []);
+
+  // ✅ Add new income
+  const handleAddIncome = async (e) => {
     e.preventDefault();
     const { name, amount } = newIncome;
-
     if (!name || !amount) return;
 
-    const newId = incomes.length + 1;
-    setIncomes([
-      ...incomes,
-      {
-        id: newId,
+    try {
+      const { data } = await API.post("/incomes", {
         name,
         amount: Number(amount),
-      },
-    ]);
-
-    setNewIncome({ name: "", amount: "" });
+      });
+      setIncomes([...incomes, data]); // Update state
+      setNewIncome({ name: "", amount: "" });
+    } catch (err) {
+      console.error("Failed to add income:", err);
+      alert("Error adding income");
+    }
   };
 
-  const handleDeleteIncome = (id) => {
-    setIncomes(incomes.filter((income) => income.id !== id));
+  // ✅ Delete income
+  const handleDeleteIncome = async (id) => {
+    try {
+      await API.delete(`/incomes/${id}`);
+      setIncomes(incomes.filter((income) => income._id !== id));
+    } catch (err) {
+      console.error("Failed to delete income:", err);
+      alert("Error deleting income");
+    }
   };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="dashboard-layout">
@@ -98,17 +120,17 @@ const IncomePage = () => {
         <div className="section income-list-section">
           <h2>All Incomes</h2>
           {incomes.length === 0 ? (
-            <p>No incomes added yet.</p>
+            <p>No incomes found.</p>
           ) : (
             <ul className="income-list">
               {incomes.map((income) => (
-                <li key={income.id} className="income-item">
+                <li key={income._id} className="income-item">
                   <span>
                     💰 <strong>{income.name}</strong> + ₹{income.amount}
                   </span>
                   <button
                     className="delete-btn"
-                    onClick={() => handleDeleteIncome(income.id)}
+                    onClick={() => handleDeleteIncome(income._id)}
                   >
                     Delete
                   </button>
