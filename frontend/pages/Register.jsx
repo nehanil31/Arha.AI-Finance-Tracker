@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
 import axios from "axios";
+import API from "../src/api/axiosInstance";
 
 const Register = () => {
   const navigate = useNavigate(); // ✅ Move inside the component
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,18 +13,18 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // API call here
-    console.log({ name, password, email });
     try {
-      await axios.post("/api/v1/users/register", {
+      const { data } = await API.post("/users/register", {
         name,
         email,
         password,
       });
-      alert("Registered successfully");
-      navigate("/login");
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      navigate("/dashboard");
     } catch (error) {
       console.log(error);
       alert("Registration unsuccessfull");
+      navigate("/register");
     }
   };
 

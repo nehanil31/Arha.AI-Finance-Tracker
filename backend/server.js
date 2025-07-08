@@ -16,12 +16,15 @@ app.use(express.json());
 
 // Routes
 import userRouter from "./routes/user.route.js";
-app.use("/api/v1/users", userRouter);
-app.use("/api/auth", authRoutes);
-app.use("/api/accounts", accountRoutes);
-app.use("/api/expenses", expenseRoutes);
-app.use("/api/incomes", incomeRoutes);
-app.use("/api/reports", reportRoutes);
+import accountRouter from "./routes/account.route.js";
+import expenseRouter from "./routes/expense.route.js";
+import incomeRouter from "./routes/income.route.js";
+import reportRouter from "./routes/report.route.js";
+app.use("/api/users", userRouter);
+app.use("/api/accounts", accountRouter);
+app.use("/api/expenses", expenseRouter);
+app.use("/api/incomes", incomeRouter);
+app.use("/api/reports", reportRouter);
 // Start server on port 4000
 const PORT = process.env.PORT;
 

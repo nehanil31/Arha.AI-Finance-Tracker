@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 //generate token function -> takes user id as input
 const generateToken = (userId) => {
+  console.log("generate token called");
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
@@ -25,6 +26,7 @@ export const registerUser = async (req, res) => {
     const token = generateToken(user._id);
     res.status(201).json({ user, token });
   } catch (error) {
+    console.log("reached here");
     res.status(500).json({ message: error.message });
   }
 };

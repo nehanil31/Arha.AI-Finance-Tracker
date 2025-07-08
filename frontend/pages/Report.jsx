@@ -1,36 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import "./Report.css";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
+import API from "../src/api/axiosInstance"; // Axios instance with token
 
 const ReportsPage = () => {
-  // Dummy data (you can fetch this from backend later)
-  const [accounts] = useState([
-    { id: 1, type: "Wallet", balance: 15000 },
-    { id: 2, type: "Bank", balance: 50000 },
-    { id: 3, type: "Crypto", balance: 5000 },
-  ]);
+  const [accounts, setAccounts] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [incomes, setIncomes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [expenses] = useState([
-    { id: 1, name: "Groceries", amount: 1200, date: "2025-07-01" },
-    { id: 2, name: "Transport", amount: 800, date: "2025-07-03" },
-    { id: 3, name: "Utilities", amount: 1500, date: "2025-07-05" },
-  ]);
+  // ✅ Fetch all data from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [accountsRes, expensesRes, incomesRes] = await Promise.all([
+          API.get("/accounts"),
+          API.get("/expenses"),
+          API.get("/incomes"),
+        ]);
+        setAccounts(accountsRes.data);
+        setExpenses(expensesRes.data);
+        setIncomes(incomesRes.data);
+      } catch (err) {
+        console.error("Failed to fetch report data:", err);
+        alert("Error loading reports. Please login again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-  const [incomes] = useState([
-    { id: 1, name: "Salary", amount: 50000, date: "2025-07-01" },
-    { id: 2, name: "Freelance", amount: 8000, date: "2025-07-10" },
-  ]);
+  if (loading) return <p>Loading report...</p>;
 
   const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
   const totalIncome = incomes.reduce((sum, inc) => sum + inc.amount, 0);
 
-  // Simple AI Prediction Placeholder (average expense * months)
-  const predictedMonthlyExpense = totalExpenses * 1.1; // +10% growth
+  // Simple AI Prediction (10% growth)
+  const predictedMonthlyExpense = totalExpenses * 1.1;
   const predictedYearlyExpense = predictedMonthlyExpense * 12;
 
+  // ✅ Download Excel with backend data
   const handleDownloadExcel = () => {
     const wsExpenses = XLSX.utils.json_to_sheet(expenses);
     const wsIncomes = XLSX.utils.json_to_sheet(incomes);
