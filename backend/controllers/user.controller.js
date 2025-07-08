@@ -36,13 +36,21 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
     // Find user
-    const user = await UserModel.findOne({ email });
-    if (!user || !(await UserModel.comparePassword(password))) {
-      return res.status(404).json({ message: "Invalid credentials" });
+    console.log("reacher here");
+    const user = await UserModel.findOne({ email }).select("+password");
+    console.log(user);
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const token = generateToken(user._id);
-
+    //exclude password before sending  TODO
     res.status(200).json({ user, token });
   } catch (error) {
     res.status(500).json({ message: error.message });
