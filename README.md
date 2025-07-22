@@ -1,4 +1,4 @@
-# 📊 Arha AI – Finance Tracker
+# 📊 Arha.AI – Finance Tracker
 
 A **full-stack MERN** (MongoDB, Express, React, Node.js) Finance Tracker web app that helps you manage your **accounts, incomes, expenses**, and generate **insightful reports** with AI-based predictions.
 
