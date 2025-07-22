@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": "http://localhost:4000", // 👈 backend server
+      "/api": "https://finance-tracker-backend-4eoh.onrender.com", // 👈 backend server
     },
   },
 });
