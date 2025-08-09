@@ -5,7 +5,14 @@ A **full-stack MERN** (MongoDB, Express, React, Node.js) Finance Tracker web app
 💰 Track where your money goes.  
 📊 View expenses & incomes in beautiful charts.  
 📥 Export your financial reports as Excel files.  
-🔒 Secure user authentication with JWT.  
+🔒 Secure user authentication with JWT.
+
+---
+
+## 🔗 Live Demo
+
+Check out the live project here:  
+[https://finance-tracker-frontend-o7f3.onrender.com/](https://finance-tracker-frontend-o7f3.onrender.com/)
 
 ---
 
@@ -30,8 +37,3 @@ A **full-stack MERN** (MongoDB, Express, React, Node.js) Finance Tracker web app
 | Axios (API calls)      | JWT Auth Middleware | Mongoose    |
 | Recharts (Charts)      | bcrypt (Password)   |             |
 | TailwindCSS / CSS      |                     |             |
-
----
-
-
-
