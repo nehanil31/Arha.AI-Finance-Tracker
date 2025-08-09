@@ -1,76 +1,150 @@
-.dashboard-container {
-  flex: 1;
-  padding: 20px;
-  background: #f9fafb;
+/* ===== Dashboard Layout ===== */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f6f8;
 }
 
-.section {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.dashboard-container {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
 }
 
 h1 {
   font-size: 2rem;
-  margin-bottom: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
 }
 
-h2 {
-  color: #3b82f6; /* blue */
-  margin-bottom: 10px;
+.section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: 2rem;
+}
+
+/* ===== Chart Section ===== */
+.chart-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #334155;
+}
+
+/* ===== Add Income Form ===== */
+.add-income-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .income-form {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.income-form input,
-.income-form button {
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+.income-form input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
   font-size: 1rem;
 }
 
+.income-form input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
 .add-btn {
+  padding: 0.75rem 1.5rem;
   background: #3b82f6;
   color: white;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s ease;
 }
 
 .add-btn:hover {
   background: #2563eb;
 }
 
+/* ===== Income List ===== */
 .income-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .income-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f1f5f9;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 8px;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.income-item span {
+  font-size: 1rem;
+  color: #1e293b;
 }
 
 .delete-btn {
   background: #ef4444;
   color: white;
   border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
 }
 
 .delete-btn:hover {
   background: #dc2626;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .income-form {
+    flex-direction: column;
+  }
+
+  .income-form input {
+    min-width: 100%;
+  }
+
+  .income-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .section {
+    padding: 1rem;
+  }
+
+  .add-btn {
+    width: 100%;
+  }
 }

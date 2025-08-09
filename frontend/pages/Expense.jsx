@@ -85,7 +85,7 @@ const ExpensesPage = () => {
 
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <main className="dashboard-container">
         <h1>Expenses</h1>
 

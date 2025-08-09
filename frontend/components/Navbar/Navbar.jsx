@@ -1,26 +1,41 @@
 import React from "react";
-import "./Navbar.css"; // You can style it here or use inline styles
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import "./Navbar.css";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogout = () => {
+    localStorage.removeItem("userInfo");
+    navigate("/login");
+  };
+
   return (
     <nav className="navbar">
-      <Link to="/" className="logo">
-        Arha AI
-        <img src="frontend\public\logo.jpeg" alt="" />
-      </Link>
-      <ul className="nav-links">
-        <li>
-          <a href="/">Home</a>
+      <div className="navbar-logo">
+        <span>FinanceApp</span>
+      </div>
+      <ul className="navbar-links">
+        <li className={location.pathname === "/dashboard" ? "active" : ""}>
+          <Link to="/dashboard">Dashboard</Link>
         </li>
-        <li>
-          <a href="/about">About</a>
+        <li className={location.pathname === "/expense" ? "active" : ""}>
+          <Link to="/expense">Expenses</Link>
         </li>
-        <li>
-          <a href="/services">Services</a>
+        <li className={location.pathname === "/income" ? "active" : ""}>
+          <Link to="/income">Income</Link>
         </li>
+        <li className={location.pathname === "/report" ? "active" : ""}>
+          <Link to="/report">Reports</Link>
+        </li>
+        {/* <li className={location.pathname === "/settings" ? "active" : ""}>
+          <Link to="/settings">Settings</Link>
+        </li> */}
         <li>
-          <a href="/contact">Contact</a>
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
         </li>
       </ul>
     </nav>

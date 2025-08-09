@@ -70,7 +70,7 @@ const IncomePage = () => {
 
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <main className="dashboard-container">
         <h1>Income</h1>
 

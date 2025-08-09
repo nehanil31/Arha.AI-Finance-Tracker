@@ -9,6 +9,7 @@ const generateToken = (userId) => {
 
 // Register User
 export const registerUser = async (req, res) => {
+  console.log("reached here");
   const { name, email, password } = req.body;
   try {
     // Check if user already exists
@@ -24,6 +25,7 @@ export const registerUser = async (req, res) => {
     });
 
     const token = generateToken(user._id);
+    console.log(token);
     res.status(201).json({ user, token });
   } catch (error) {
     console.log("reached here");
@@ -50,6 +52,7 @@ export const loginUser = async (req, res) => {
     }
 
     const token = generateToken(user._id);
+    console.log(token);
     //exclude password before sending  TODO
     res.status(200).json({ user, token });
   } catch (error) {

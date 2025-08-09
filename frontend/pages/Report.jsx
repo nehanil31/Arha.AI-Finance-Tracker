@@ -45,21 +45,66 @@ const ReportsPage = () => {
 
   // ✅ Download Excel with backend data
   const handleDownloadExcel = () => {
-    const wsExpenses = XLSX.utils.json_to_sheet(expenses);
-    const wsIncomes = XLSX.utils.json_to_sheet(incomes);
+    // Format expenses array for flat data and proper columns
+    const formattedExpenses = expenses.map(
+      ({ _id, name, amount, category, accountId, createdAt }) => ({
+        ID: _id,
+        Name: name,
+        Amount: amount,
+        Category: category,
+        AccountID: accountId,
+        Date: createdAt ? new Date(createdAt).toLocaleDateString() : "",
+      })
+    );
 
+    // Format incomes array similarly
+    const formattedIncomes = incomes.map(
+      ({ _id, name, amount, accountId, createdAt }) => ({
+        ID: _id,
+        Name: name,
+        Amount: amount,
+        AccountID: accountId,
+        Date: createdAt ? new Date(createdAt).toLocaleDateString() : "",
+      })
+    );
+
+    // Create worksheet for expenses
+    const wsExpenses = XLSX.utils.json_to_sheet(formattedExpenses, {
+      header: ["ID", "Name", "Amount", "Category", "AccountID", "Date"],
+    });
+
+    // Create worksheet for incomes
+    const wsIncomes = XLSX.utils.json_to_sheet(formattedIncomes, {
+      header: ["ID", "Name", "Amount", "AccountID", "Date"],
+    });
+
+    // Create new workbook and append worksheets
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, wsExpenses, "Expenses");
     XLSX.utils.book_append_sheet(wb, wsIncomes, "Incomes");
 
+    // Write workbook to buffer and trigger download
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(data, "Finance_Report.xlsx");
   };
 
+  // const handleDownloadExcel = () => {
+  //   const wsExpenses = XLSX.utils.json_to_sheet(expenses);
+  //   const wsIncomes = XLSX.utils.json_to_sheet(incomes);
+
+  //   const wb = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(wb, wsExpenses, "Expenses");
+  //   XLSX.utils.book_append_sheet(wb, wsIncomes, "Incomes");
+
+  //   const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  //   const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+  //   saveAs(data, "Finance_Report.xlsx");
+  // };
+
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <main className="dashboard-container">
         <h1>Reports</h1>
 

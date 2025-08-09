@@ -1,10 +1,11 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-
 import "./Sidebar.css";
+
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
     navigate("/login");
@@ -14,23 +15,25 @@ const Sidebar = () => {
     <aside className="sidebar">
       <h2 className="sidebar-title">FinanceApp</h2>
       <ul className="sidebar-links">
-        <li className={location.pathname === "/" ? "active" : ""}>
+        <li className={location.pathname === "/dashboard" ? "active" : ""}>
           <Link to="/dashboard">Dashboard</Link>
         </li>
-        <li className={location.pathname === "/expenses" ? "active" : ""}>
+        <li className={location.pathname === "/expense" ? "active" : ""}>
           <Link to="/expense">Expenses</Link>
         </li>
         <li className={location.pathname === "/income" ? "active" : ""}>
           <Link to="/income">Income</Link>
         </li>
-        <li>
+        <li className={location.pathname === "/report" ? "active" : ""}>
           <Link to="/report">Reports</Link>
         </li>
-        <li>
+        <li className={location.pathname === "/settings" ? "active" : ""}>
           <Link to="/settings">Settings</Link>
         </li>
         <li>
-          <button onClick={handleLogout}>Logout</button>
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
         </li>
       </ul>
     </aside>

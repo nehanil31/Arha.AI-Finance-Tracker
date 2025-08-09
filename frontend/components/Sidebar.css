@@ -1,45 +1,102 @@
+/* General Sidebar Styling */
 .sidebar {
-  width: 220px;
-  background-color: #1f2937; /* dark gray */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh; /* Full height */
+  width: 240px; /* Sidebar width */
+  background-color: #1e293b; /* Dark slate */
   color: #fff;
-  height: 100vh;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
+/* Title */
 .sidebar-title {
-  font-size: 1.8rem;
-  margin-bottom: 30px;
-  color: #3b82f6; /* blue */
+  font-size: 1.5rem;
+  font-weight: 600;
   text-align: center;
+  margin-bottom: 30px;
+  color: #38bdf8; /* Cyan shade */
 }
 
+/* Links list */
 .sidebar-links {
   list-style: none;
   padding: 0;
   margin: 0;
+  flex: 1;
 }
 
+/* Link styles */
 .sidebar-links li {
-  margin: 15px 0;
+  margin: 10px 0;
 }
 
 .sidebar-links a {
-  text-decoration: none;
-  color: #cbd5e1; /* light gray */
-  font-size: 1.1rem;
   display: block;
-  padding: 8px 12px;
+  padding: 12px 15px;
+  color: #cbd5e1;
+  text-decoration: none;
   border-radius: 6px;
   transition: background 0.3s, color 0.3s;
 }
 
 .sidebar-links a:hover {
-  background-color: #3b82f6;
+  background-color: #334155;
   color: #fff;
 }
 
-.sidebar-links .active a {
-  background-color: #3b82f6;
+/* Active link */
+.sidebar-links li.active a {
+  background-color: #38bdf8;
   color: #fff;
+  font-weight: 500;
+}
+
+/* Logout button */
+.logout-btn {
+  background-color: #ef4444; /* Red */
+  border: none;
+  padding: 12px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-weight: 500;
+  transition: background 0.3s;
+  width: 100%;
+  margin-top: auto;
+}
+
+.logout-btn:hover {
+  background-color: #dc2626;
+}
+
+/* MAIN CONTENT SHIFT */
+.main-content {
+  margin-left: 240px; /* Push main content so it doesn't overlap */
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Responsive: Collapse Sidebar */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    width: 200px;
+    height: 100%;
+    left: -200px;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
 }

@@ -8,9 +8,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import API from "../src/api/axiosInstance"; // Axios instance with token
+import API from "../src/api/axiosInstance";
 
 const COLORS = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
 
@@ -20,29 +19,21 @@ const Dashboard = () => {
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(null);
+  const [editedBalance, setEditedBalance] = useState("");
 
+  const [newAccount, setNewAccount] = useState({ type: "", balance: "" });
   const [newExpense, setNewExpense] = useState({
     name: "",
     amount: "",
     category: "",
     accountId: "",
   });
-
   const [newIncome, setNewIncome] = useState({
     name: "",
     amount: "",
     accountId: "",
   });
-
-  const [newAccount, setNewAccount] = useState({
-    type: "",
-    balance: "",
-  });
-
-  const [editMode, setEditMode] = useState(null);
-  const [editedBalance, setEditedBalance] = useState("");
-
-  const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,8 +57,6 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  const handleViewChange = (newView) => setView(newView);
-
   const handleAddAccount = async (e) => {
     e.preventDefault();
     try {
@@ -77,7 +66,7 @@ const Dashboard = () => {
       });
       setAccounts([...accounts, data]);
       setNewAccount({ type: "", balance: "" });
-    } catch (err) {
+    } catch {
       alert("Failed to add account");
     }
   };
@@ -86,7 +75,7 @@ const Dashboard = () => {
     try {
       await API.delete(`/accounts/${id}`);
       setAccounts(accounts.filter((acc) => acc._id !== id));
-    } catch (err) {
+    } catch {
       alert("Failed to delete account");
     }
   };
@@ -108,7 +97,7 @@ const Dashboard = () => {
       );
       setEditMode(null);
       setEditedBalance("");
-    } catch (err) {
+    } catch {
       alert("Failed to update account");
     }
   };
@@ -126,14 +115,14 @@ const Dashboard = () => {
       setExpenses([...expenses, data]);
       setNewExpense({ name: "", amount: "", category: "", accountId: "" });
 
-      // Update account balance locally
-      const updatedAccounts = accounts.map((acc) =>
-        acc._id === accountId
-          ? { ...acc, balance: acc.balance - Number(amount) }
-          : acc
+      setAccounts((prev) =>
+        prev.map((acc) =>
+          acc._id === accountId
+            ? { ...acc, balance: acc.balance - Number(amount) }
+            : acc
+        )
       );
-      setAccounts(updatedAccounts);
-    } catch (err) {
+    } catch {
       alert("Failed to add expense");
     }
   };
@@ -150,14 +139,14 @@ const Dashboard = () => {
       setIncomes([...incomes, data]);
       setNewIncome({ name: "", amount: "", accountId: "" });
 
-      // Update account balance locally
-      const updatedAccounts = accounts.map((acc) =>
-        acc._id === accountId
-          ? { ...acc, balance: acc.balance + Number(amount) }
-          : acc
+      setAccounts((prev) =>
+        prev.map((acc) =>
+          acc._id === accountId
+            ? { ...acc, balance: acc.balance + Number(amount) }
+            : acc
+        )
       );
-      setAccounts(updatedAccounts);
-    } catch (err) {
+    } catch {
       alert("Failed to add income");
     }
   };
@@ -167,25 +156,22 @@ const Dashboard = () => {
     { name: "Incomes", value: incomes.reduce((sum, i) => sum + i.amount, 0) },
   ];
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p className="loading-text">Loading...</p>;
 
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       <main className="dashboard-container">
         <h1>Finance Tracker Dashboard</h1>
 
         <div className="top-section">
           {/* Accounts Section */}
-          <div className="section accounts-section">
+          <div className="section">
             <h2>Accounts</h2>
             <div className="accounts-list">
               {accounts.map((account) => (
-                <div
-                  key={account._id}
-                  className={`account-card ${account.type.toLowerCase()}`}
-                >
+                <div key={account._id} className="account-card">
                   <h3>{account.type}</h3>
                   {editMode === account._id ? (
                     <>
@@ -193,12 +179,8 @@ const Dashboard = () => {
                         type="number"
                         value={editedBalance}
                         onChange={(e) => setEditedBalance(e.target.value)}
-                        className="edit-input"
                       />
-                      <button
-                        onClick={() => handleSaveAccount(account._id)}
-                        className="save-btn"
-                      >
+                      <button onClick={() => handleSaveAccount(account._id)}>
                         Save
                       </button>
                     </>
@@ -207,28 +189,23 @@ const Dashboard = () => {
                   )}
                   <div className="account-actions">
                     <button
-                      className="edit-btn"
                       onClick={() =>
                         handleEditAccount(account._id, account.balance)
                       }
                     >
                       Edit
                     </button>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteAccount(account._id)}
-                    >
+                    <button onClick={() => handleDeleteAccount(account._id)}>
                       Delete
                     </button>
                   </div>
                 </div>
               ))}
 
-              {/* Add Account Form */}
               <form className="add-account-form" onSubmit={handleAddAccount}>
                 <input
                   type="text"
-                  placeholder="Account Type (e.g. Wallet)"
+                  placeholder="Account Type"
                   value={newAccount.type}
                   onChange={(e) =>
                     setNewAccount({ ...newAccount, type: e.target.value })
@@ -244,21 +221,15 @@ const Dashboard = () => {
                   }
                   required
                 />
-                <button type="submit" className="add-account">
-                  + Add Account
-                </button>
+                <button type="submit">+ Add Account</button>
               </form>
             </div>
           </div>
 
           {/* Overview Section */}
-          <div className="section overview-section">
+          <div className="section">
             <h2>Overview</h2>
-            <select
-              className="view-select"
-              value={view}
-              onChange={(e) => handleViewChange(e.target.value)}
-            >
+            <select value={view} onChange={(e) => setView(e.target.value)}>
               <option value="daily">Daily</option>
               <option value="monthly">Monthly</option>
               <option value="yearly">Yearly</option>
@@ -273,7 +244,6 @@ const Dashboard = () => {
                   cx="50%"
                   cy="50%"
                   outerRadius={80}
-                  fill="#8884d8"
                   label
                 >
                   {chartData.map((entry, index) => (
@@ -291,9 +261,9 @@ const Dashboard = () => {
         </div>
 
         {/* Expenses & Income Section */}
-        <div className="expenses-income-container">
+        <div className="two-column">
           {/* Expenses */}
-          <div className="section expenses-section">
+          <div className="section">
             <h2>Add Expense</h2>
             <form onSubmit={handleAddExpense}>
               <input
@@ -345,24 +315,21 @@ const Dashboard = () => {
               <button type="submit">Add Expense</button>
             </form>
 
-            <div className="expenses-list">
-              <h3>Expenses:</h3>
+            <ul className="data-list">
               {expenses.length === 0 ? (
-                <p>No expenses added yet.</p>
+                <li>No expenses added yet.</li>
               ) : (
-                <ul>
-                  {expenses.map((expense) => (
-                    <li key={expense._id}>
-                      💸 {expense.name} - ₹{expense.amount} [{expense.category}]
-                    </li>
-                  ))}
-                </ul>
+                expenses.map((expense) => (
+                  <li key={expense._id}>
+                    💸 {expense.name} - ₹{expense.amount} [{expense.category}]
+                  </li>
+                ))
               )}
-            </div>
+            </ul>
           </div>
 
           {/* Income */}
-          <div className="section income-section">
+          <div className="section">
             <h2>Add Income</h2>
             <form onSubmit={handleAddIncome}>
               <input
@@ -400,20 +367,17 @@ const Dashboard = () => {
               <button type="submit">Add Income</button>
             </form>
 
-            <div className="income-list">
-              <h3>Incomes:</h3>
+            <ul className="data-list">
               {incomes.length === 0 ? (
-                <p>No incomes added yet.</p>
+                <li>No incomes added yet.</li>
               ) : (
-                <ul>
-                  {incomes.map((income) => (
-                    <li key={income._id}>
-                      💰 {income.name} + ₹{income.amount}
-                    </li>
-                  ))}
-                </ul>
+                incomes.map((income) => (
+                  <li key={income._id}>
+                    💰 {income.name} + ₹{income.amount}
+                  </li>
+                ))
               )}
-            </div>
+            </ul>
           </div>
         </div>
       </main>
