@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:3000/api", // Your backend base URL
+  baseURL: "https://finance-tracker-backend-m6zy.onrender.com/api", // Your backend base URL
 });
 
 // Attach token from localStorage automatically
