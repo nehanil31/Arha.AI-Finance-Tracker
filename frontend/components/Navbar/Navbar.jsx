@@ -17,7 +17,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <span>FinanceApp</span>
+        <span>Arha Finance</span>
       </div>
 
       {/* Only show links if user is logged in */}
